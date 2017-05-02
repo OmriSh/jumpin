@@ -7,7 +7,7 @@ Using npm:
     $ npm install jumpin --save
 
 ## Usage
-```JavaScript
+```js
     const Jumpin = require('jumpin');
     const allPredicate = ()=>true;
     const timePredicate = (data)=>{ return typeof data.time === 'number'; };
