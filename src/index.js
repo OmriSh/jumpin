@@ -1,12 +1,14 @@
 function Jumpin(options){
-    if(options === undefined){
-        throw new Error('options argument is not optional');
+    options = options || {};
+    if(options.promiseCtor === undefined){
+        if(window.Promise === undefined){
+            throw new Error('\'options.promiseCtor\' is required if no default Promise is defined');
+        }
+        options.promiseCtor = window.Promise;
     }
-    if(options.promiseFactory === undefined){
-        throw new Error('missing \'promiseFactory\' on options argument');
-    }
+
     this.predicateMap = [];
-    this.promiseFactory = options.promiseFactory;
+    this.promiseCtor = options.promiseCtor;
     if(options.predicateTranslator){
         this.predicateTranslator = options.predicateTranslator;
     }
@@ -25,7 +27,7 @@ Jumpin.prototype.trigger = function trigger(data){
     var self = this;
     var predicates = self.predicateMap.slice(0); //clone current array
     return self._recursiveTrigger(predicates, data).then(function(){
-         return self.promiseFactory(function(resolve){
+         return new self.promiseCtor(function(resolve){
             resolve(data);
         });
     });
@@ -102,7 +104,7 @@ Jumpin.prototype._recursiveTrigger =  function _recursiveTrigger(predicates, dat
 }
 
 Jumpin.prototype._PromiseWhenAll = function _PromiseWhenAll(promises) { //this function in not part of the Promises/A+ spec
-    return this.promiseFactory(function(resolve, reject) {
+    return new this.promiseCtor(function(resolve, reject) {
         var context = {
             counter: promises.length,
             results: []

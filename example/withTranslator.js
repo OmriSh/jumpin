@@ -27,12 +27,8 @@ function predicateCreator(path, value){
     }
 }
 
-function promiseFactory(promiseFunc){
-    return new Promise(promiseFunc);
-}
-
 var Jumpin = new Jumpin({
-    promiseFactory: promiseFactory,
+    promiseCtor: Promise, //can use any other Promise-Library!
     predicateTranslator: predicateTranslator
 });
 
@@ -43,7 +39,7 @@ Jumpin.on('state:wakeup', function(data){
 });
 
 Jumpin.on('state:shower', function(data){
-    return promiseFactory(function(resolve){
+    return new Promise(function(resolve){
         setTimeout(()=>{
             data.state = 'eat';
             resolve(true);
@@ -52,7 +48,7 @@ Jumpin.on('state:shower', function(data){
 });
 
 Jumpin.on('state:eat', function(data){
-    return promiseFactory(function(resolve){
+    return new Promise(function(resolve){
         setTimeout(()=>{
             data.state = 'sleep';
             resolve(true);

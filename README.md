@@ -9,21 +9,26 @@ Using npm:
 ## Usage
 ```JavaScript
     const Jumpin = require('jumpin');
-    const promiseFactory = function promiseFactory(promiseFunc){
-        return new Promise(promiseFunc);
-    };
     const allPredicate = ()=>true;
     const timePredicate = (data)=>{ return typeof data.time === 'number'; };
 
-    var emitter = new Jumpin({ promiseFactory: promiseFactory } );
+    var emitter = new Jumpin();
 
     emitter.on(allPredicate, (obj)=>{
         obj.time = Date.now();
+        //returning true means that we changed something that other listener's predicates might care about
+        //note: listeners that were invoked in this cycle won't get invoke again
         return true;
     });
 
+    //async operation, will cause main pipeline to be delayed
     emitter.on(timePredicate, (obj)=>{
-        obj.time = new Date(obj.time).toISOString();
+        return new Promise((resolve)=>{
+            setTimeout(()=>{
+                obj.time = new Date(obj.time).toISOString();
+                return resolve(false); //returning false (and undefined) means that we don't wan't to try failed listener's-predicates again
+            }, 250);
+        });
     });
 
     emitter.trigger({type: 'first-event'}).then(function(data){
@@ -32,7 +37,13 @@ Using npm:
     });
 ```
 
+## API
+Full API documentation is yet to be written, but you can view the [source](https://github.com/OmriSh/jumpin/blob/master/src/index.js) and [examples](https://github.com/OmriSh/jumpin/tree/master/example).
+
 ## Change Log
 
+### Jumpin v0.0.2
+* use PromiseCtor instead of promiseFactory
+
 ### Jumpin v0.0.1
-    * First release (beta)
+* First release (beta)
