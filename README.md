@@ -1,10 +1,11 @@
 # Jumpin
 An emitter-like way to distributively create and modify objects.
 
-## Installation
-Using npm:
+## Install
+```sh
+$ npm install jumpin --save
+```
 
-    $ npm install jumpin --save
 ## Usage
 ```js
     const Jumpin = require('jumpin');
@@ -45,6 +46,9 @@ Using npm:
 Full API documentation is yet to be written, but you can view the [source](https://github.com/OmriSh/jumpin/blob/master/src/index.js) and [examples](https://github.com/OmriSh/jumpin/tree/master/example).
 
 ## Change Log
+
+### Jumpin v0.0.5
+* update documentation
 
 ### Jumpin v0.0.4
 * update documentation
