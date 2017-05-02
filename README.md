@@ -1,5 +1,5 @@
 # Jumpin
-An emitter-like way to distributedly create and modify objects.
+An emitter-like way to distributively create and modify objects.
 
 ## Installation
 Using npm:
