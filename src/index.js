@@ -88,11 +88,10 @@ Jumpin.prototype._recursiveTrigger =  function _recursiveTrigger(predicates, dat
 
     return this._PromiseWhenAll(promises).then((results)=>{ //by this point, no promises!
         var resultsLength = results.length;
-        if(resultsLength !== 0){
-            while(reRun === false && resultsLength !== 0){
-                resultsLength--;
-                reRun = results[resultsLength] === true;
-            }
+  
+        while(reRun === false && resultsLength !== 0){
+            resultsLength--;
+            reRun = results[resultsLength] === true;
         }
 
         reRun = reRun && predicateFailed === true; //re-run could not run, should warn?
