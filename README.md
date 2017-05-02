@@ -47,6 +47,9 @@ Full API documentation is yet to be written, but you can view the [source](https
 
 ## Change Log
 
+### Jumpin v0.0.7
+* update package.json
+
 ### Jumpin v0.0.6
 * update documentation
 
