@@ -4,11 +4,11 @@ function Jumpin(options){
         if(typeof Promise === 'undefined'){
             throw new Error('\'options.promiseCtor\' is required if no default Promise is defined');
         }
-        options.promiseCtor = Promise;
+        this.promiseCtor = Promise;
     }
 
     this.predicateMap = [];
-    this.promiseCtor = options.promiseCtor;
+    this.promiseCtor = this.promiseCtor || options.promiseCtor;
     if(options.predicateTranslator !== undefined){
         this.predicateTranslator = options.predicateTranslator;
     }
