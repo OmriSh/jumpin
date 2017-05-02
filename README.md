@@ -42,8 +42,11 @@ Full API documentation is yet to be written, but you can view the [source](https
 
 ## Change Log
 
+### Jumpin v0.0.3
+* fix bug in rerun mechanism
+
 ### Jumpin v0.0.2
 * use PromiseCtor instead of promiseFactory
 
 ### Jumpin v0.0.1
-* First release (beta)
+* first release (beta)

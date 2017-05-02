@@ -33,7 +33,6 @@ var Jumpin = new Jumpin({
 });
 
 Jumpin.on('state:wakeup', function(data){
-    console.log('shower');
     data.state = 'shower';
     return true; //return true means that we changed something that could be important for other listeners 
 });

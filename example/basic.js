@@ -7,7 +7,7 @@ var allEvents = () => true;
 var id = 0;
 emitter.on(allEvents, (data)=>{
     id++;
-    data.eventId = id;
+    data.event.id = id;
 });
 
 //add time for event that will be sent to server

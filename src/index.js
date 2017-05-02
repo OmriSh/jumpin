@@ -66,23 +66,27 @@ Jumpin.prototype._recursiveTrigger =  function _recursiveTrigger(predicates, dat
     var reRun = false, promises = [], predicateFailed = false;
 
     for(var i=predicates.length -1; i >=0; i--){
-        var predicateResult = (!!predicates[i]) && predicates[i].isEnabled === true && predicates[i].predicate(data);
-        if(predicateResult === true){
-            var result = this._invokeEntryFunc(predicates[i], data);
-            if(result !== undefined){
-                if(result === true){ //someting had changed with that object, need to check if there are leftover handlers
-                    reRun = true;
-                } else if(result.then !== undefined){ //check if promise-like
-                    promises.push(result);
-                } else if(result !== false){
-                    throw new Error('return value should be either a promise, boolean or undefined');
+
+        var predicateResult = false; //should not run
+        if(predicates[i] !== undefined && predicates[i].isEnabled === true){
+            predicateResult = predicates[i].predicate(data);
+            if(predicateResult === false){
+                predicateFailed = true; //tell if there are any leftovers for rerun  
+            } else if(predicateResult === true){
+                var result = this._invokeEntryFunc(predicates[i], data);
+                if(result !== undefined){
+                    if(result === true){ //someting had changed with that object, need to check if there are leftover handlers
+                        reRun = true;
+                    } else if(result.then !== undefined){ //check if promise-like
+                        promises.push(result);
+                    } else if(result !== false){
+                        throw new Error('return value should be either a promise, boolean or undefined');
+                    }
+                    predicates[i] = undefined; //was handled, mask on cloned array
                 }
-                predicates[i] = undefined; //was handled, mask on cloned array
+            } else {
+                throw new Error('predicate return value should be boolean, got ' + typeof predicateResult);
             }
-        } else if(predicateResult === false){
-            predicateFailed = true;
-        } else {
-            throw new Error('predicate return value should be boolean, got ' + typeof predicateResult);
         }
     }
 
