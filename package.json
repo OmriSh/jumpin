@@ -1,6 +1,6 @@
 {
   "name": "jumpin",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "An emitter-like way to distributively create and modify objects",
   "main": "src/index.js",
   "scripts": {

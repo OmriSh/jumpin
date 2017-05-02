@@ -1,10 +1,10 @@
 function Jumpin(options){
     options = options || {};
     if(options.promiseCtor === undefined){
-        if(window.Promise === undefined){
+        if(typeof Promise === 'undefined'){
             throw new Error('\'options.promiseCtor\' is required if no default Promise is defined');
         }
-        options.promiseCtor = window.Promise;
+        options.promiseCtor = Promise;
     }
 
     this.predicateMap = [];
