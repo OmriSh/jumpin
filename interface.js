@@ -13,36 +13,64 @@ function Emitter(options){
 }
 
 Emitter.prototype.on = function on(predicate, func){
+    this._register(predicate, func);
+};
+
+Emitter.prototype.once = function on(predicate, func){
+    var entry = this._register(predicate, func);
+    entry.isOnce = true;
+};
+
+
+Emitter.prototype._register = function _register(predicate, func) {
     if(this.predicateTranslator !== undefined){
         predicate = this.predicateTranslator(predicate);
     }
     var entry = {
         predicate: predicate,
-        func: func
+        func: func,
+        isEnabled: true
     };
     this.predicateMap.push(entry);
+    return entry;
+}
+
+Emitter.prototype._invokeEntryFunc = function _invokeEntryFunc(entry, data){
+    if(entry.isEnabled === true){
+        var retValue = entry.func(data);
+        if(entry.isOnce === true){
+            entry.isEnabled = false;
+            entry.predicate = null; //clean closure
+            entry.func = null; //clean closure
+            var entryIndex = this.predicateMap.indexOf(entry);
+            if(entryIndex !== -1){
+                this.predicateMap.splice(entryIndex, 1); //remove from main array
+            }
+        }
+        return retValue;
+    }
 };
 
 Emitter.prototype.trigger = function trigger(data){
     var promiseFactory = this.promiseFactory;
     var context = {
         data: data,
-        predicates: this.predicateMap.slice(0) //clone current listeners
+        predicates: this.predicateMap.slice(0) //clone current array
     };
-    return recursiveTrigger(context, promiseFactory).then(function(){
+    return this._recursiveTrigger(context, promiseFactory).then(function(){
          return promiseFactory(function(resolve){
             resolve(context.data);
         });
     });
 };
 
-function recursiveTrigger(context, promiseFactory){
+Emitter.prototype._recursiveTrigger =  function _recursiveTrigger(context, promiseFactory){
     var reRun = false, promises = [], predicateFailed = false;
 
     for(var i=context.predicates.length -1; i >=0; i--){
-        var predicateResult = (!!context.predicates[i]) && context.predicates[i].predicate(context.data);
+        var predicateResult = (!!context.predicates[i]) && context.predicates[i].isEnabled === true && context.predicates[i].predicate(context.data);
         if(predicateResult === true){
-            var result = context.predicates[i].func(context.data);
+            var result = this._invokeEntryFunc(context.predicates[i], context.data);
             if(result !== undefined){
                 if(result === true){ //someting had changed with that object, need to check if there are leftover handlers
                     reRun = true;
@@ -56,7 +84,7 @@ function recursiveTrigger(context, promiseFactory){
         } else if(predicateResult === false){
             predicateFailed = true;
         } else {
-            throw new Error('predicate return value should be boolean, got type ' + typeof predicateResult);
+            throw new Error('predicate return value should be boolean, got ' + typeof predicateResult);
         }
     }
 
@@ -68,7 +96,7 @@ function recursiveTrigger(context, promiseFactory){
         reRun = reRun && predicateFailed === true; //re-run could not run, should warn?
 
         if(reRun){
-            return recursiveTrigger(context, promiseFactory);
+            return this._recursiveTrigger(context, promiseFactory);
         }
     });
 }
@@ -202,5 +230,10 @@ emitter.on('state:sleep', function(data){
     return true; //this should be blocked! listeners could not be called twice within one cycle
 });
 
+emitter.once('state:eat', function(data){
+    console.log("once state:eat")
+});
+
 console.log('wakeup');
+emitter.trigger({state: 'wakeup'}).then(console.log);
 emitter.trigger({state: 'wakeup'}).then(console.log);
