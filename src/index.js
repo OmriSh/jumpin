@@ -100,7 +100,7 @@ Jumpin.prototype._recursiveTrigger =  function _recursiveTrigger(predicates, dat
 
         reRun = reRun && predicateFailed === true; //re-run could not run, should warn?
 
-        if(reRun){
+        if(reRun === true){
             return this._recursiveTrigger(predicates, data);
         }
     });
