@@ -9,7 +9,7 @@ function Jumpin(options){
 
     this.predicateMap = [];
     this.promiseCtor = options.promiseCtor;
-    if(options.predicateTranslator){
+    if(options.predicateTranslator !== undefined){
         this.predicateTranslator = options.predicateTranslator;
     }
 }
